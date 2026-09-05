@@ -1,0 +1,22 @@
+name: WSMP-Nameplate
+version: '1.0.0'
+main: com.warriorssmp.nameplate.NameplatePlugin
+api-version: '26.2'
+author: WarriorsSMP
+description: Multi-line floating nameplate above each player - PvP rank and name on top, Discord role, team and class path underneath.
+# WSMP-TabScoreboard is listed so this plugin loads AFTER it, meaning the
+# per-player tab teams already exist by the time the first nameplate refresh
+# runs. It is NOT required - nothing here breaks if TabScoreboard is absent.
+softdepend: [PlaceholderAPI, WSMP-Duels, WSMP-TabScoreboard]
+
+commands:
+  nameplate:
+    description: Reload, preview and live-tune the floating nameplates
+    usage: /nameplate <reload|test|offset|scale|toggle>
+    aliases: [wsmpnameplate, nameplates]
+    permission: wsmpnameplate.admin
+
+permissions:
+  wsmpnameplate.admin:
+    description: Manage the nameplate config and see in-game error output
+    default: op

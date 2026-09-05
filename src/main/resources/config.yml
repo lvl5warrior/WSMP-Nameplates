@@ -1,0 +1,107 @@
+# WSMP-Nameplate configuration
+#
+# This plugin controls the floating name above each player's head, and
+# nothing else - the tab list and the sidebar scoreboard still belong to
+# WSMP-TabScoreboard and are never touched.
+#
+# WHY THIS PLUGIN EXISTS: Minecraft gives you exactly ONE line above a
+# player, and it's the same text as their tab list entry. To stack more
+# under the name, this plugin spawns a small text display entity per
+# player, rides it on them so it follows smoothly, and hides the real
+# vanilla nametag so the two don't overlap.
+#
+# Every value below is re-read on each refresh, so "/nameplate reload"
+# applies live - no restart, no rebuild. The one exception is
+# update-interval-ticks, noted where it appears.
+#
+# TOKENS you can use in the lines at the bottom:
+#   {name}  - the player's username.
+#   {rank}  - their PvP rank, read straight out of WSMP-Duels (same
+#             source and same earned tier colouring the scoreboard
+#             uses). Blank if WSMP-Duels isn't installed.
+#   {strip:%some_placeholder%} - resolves a placeholder and throws away
+#             the colours it came with, so whatever colour you put in
+#             front of it is the one that actually shows.
+#   {join: A || B || C} - resolves each segment, DROPS the ones that came
+#             back empty, and glues the rest together with
+#             join-separator. This is what stops a brand new player with
+#             no team and no path from showing "Grunt |  | " with
+#             dangling separators.
+#   %anything_placeholderapi_knows% also works, exactly like in
+#   WSMP-TabScoreboard's config.
+#
+# PLACEHOLDER SANITY CHECK (PlaceholderAPI prints an unknown placeholder
+# as literal text rather than erroring, so a typo just shows up in-game):
+#   %luckperms_prefix% - LuckPerms' built-in expansion, no download
+#     needed. This is the Discord-synced role prefix.
+#   %wsmpteams_team% / %wsmpclasses_path% / %wsmpclasses_class%
+#   / %wsmpclasses_level% - from your own WSMP plugins.
+
+enabled: true
+
+# How often the text is rebuilt, in ticks (20 = 1 second). This one needs
+# a server restart to change, not just a reload - the repeating task is
+# scheduled once at startup.
+update-interval-ticks: 20
+
+# Hides the real vanilla nametag so it doesn't sit on top of line 1.
+# Turn this off and you'll see both, doubled up. Flipping it back off
+# restores normal nametags instantly, which makes it a safe escape hatch
+# if the display ever misbehaves mid-session.
+hide-vanilla-nametag: true
+
+# You never see your own nametag in vanilla; matched here. Set false if
+# you want to check your own nameplate in F5 third person.
+hide-from-self: true
+hide-when-sneaking: true
+hide-when-invisible: true
+
+# How far above the player the text sits. The display rides the player,
+# so this is measured from the mount point (roughly chest height), NOT
+# from their feet - THIS IS THE ONE NUMBER YOU'LL LIKELY NEED TO TUNE.
+# Higher = further above the head. "/nameplate offset 1.0" nudges it
+# live, so you can watch it move while you adjust.
+y-offset: 0.9
+
+# 1.0 is vanilla nametag size. Below about 0.7 gets hard to read at range.
+scale: 1.0
+
+# Roughly how far away the nameplate stays visible: 1.0 is about 64
+# blocks, 0.5 about 32.
+view-range: 1.0
+
+# Vanilla nametags render through walls - keep true to match that, or set
+# false so nameplates only show in line of sight.
+see-through-walls: true
+
+text-shadow: false
+
+# A text display dims with the surrounding light unless it's pinned to
+# full brightness, which vanilla nametags never do. Leave true unless you
+# specifically want it fading into the dark.
+full-bright: true
+
+# "default" is the same 25%-black box vanilla draws behind a nametag.
+# Also accepts "transparent", or a hex colour with alpha first
+# (#80000000 = half-transparent black, #1A1A1A = solid dark grey).
+background: "default"
+
+# Glue used between the surviving segments of a {join: ...} token.
+join-separator: " &8| "
+
+# Values treated as "empty" by {join: ...} and by the blank-line check,
+# on top of genuinely empty text. Add whatever your placeholders return
+# when a player has nothing set - if %wsmpteams_team% returns "None" for
+# a teamless player, the "none" entry below is what stops it printing.
+blank-values:
+  - "none"
+  - "n/a"
+  - "-"
+
+# Line 1 is the name itself; every line after it stacks underneath.
+# A line that fully resolves to nothing is skipped, so a player with no
+# Discord role, no team and no path just shows their name with no empty
+# gap under it.
+lines:
+  - "{rank} &f{name}"
+  - "{join: %luckperms_prefix% || &6%wsmpteams_team% || &c%wsmpclasses_path%}"
